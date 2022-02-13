@@ -1,0 +1,100 @@
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/Enxquity/bad-script-yes/main/shit%20library'))()
+ 
+local NewUI = library.createNewUI("Xenon", true)
+local NewTab = library.NewTab(NewUI, "Main", true)
+ 
+NewTab:NewButton("Bring All Items", true, function()
+   bringAllItems()
+end)  
+ 
+NewTab:NewButton("Collect All Items", true, function()
+   local oldPos = game.Players.LocalPlayer.Character:GetPrimaryPartCFrame()
+   for i,v in pairs(workspace:GetChildren()) do
+       if v:IsA("Tool") then
+           local thing = v:FindFirstChild("Handle")
+           if thing then
+             game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(thing.CFrame)
+           end
+           wait()
+       end
+   end
+   game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(oldPos)
+end)
+ 
+function getAllItems()
+       for i,v in pairs(workspace:GetChildren()) do
+       if v:IsA("Tool") then
+           local thing = v:FindFirstChild("Handle")
+           if thing then
+             game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(thing.CFrame)
+           end
+           wait()
+       end
+   end
+end
+ 
+function bringAllItems()
+   for i,v in pairs(workspace:GetChildren()) do
+       if v:IsA("Tool") then
+           local thing = v:FindFirstChild("Handle")
+           if thing then
+             thing.CFrame = game.Players.LocalPlayer.Character:GetPrimaryPartCFrame()
+           end
+           wait()
+       end
+   end
+end
+ 
+local autofarm = {}
+autofarm.enabled = false
+autofarm.oldpos = nil
+ 
+NewTab:NewToggle("Autofarm Items", false, function()
+   autofarm.enabled = true
+   autofarm.oldpos = game.Players.LocalPlayer.Character:GetPrimaryPartCFrame()
+   while autofarm.enabled do
+       if not autofarm.enabled then break end
+       getAllItems()
+   end
+end, function()
+   autofarm.enabled = false
+   game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(autofarm.oldpos)
+end)
+ 
+local speedEvent;
+local jumpEvent;
+ 
+local cache = {}
+ 
+NewTab:NewToggle("Speed", false, function()
+   cache.oldSpeed = game.Players.LocalPlayer.Character.Humanoid.WalkSpeed
+   speedEvent = game:GetService("RunService").RenderStepped:Connect(function()
+       local speed = library:GetBarFill("Speed")
+       game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = speed;
+   end)
+end, function()
+   if speedEvent then speedEvent:Disconnect() end
+   game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = cache.oldSpeed;
+end)
+ 
+NewTab:NewDragBar("Speed", 500, 16, function() --set 500 to the max speed
+   --legit do nothing;
+end)
+ 
+NewTab:NewToggle("Jump", false, function()
+   cache.oldJump = game.Players.LocalPlayer.Character.Humanoid.JumpPower
+   jumpEvent = game:GetService("RunService").RenderStepped:Connect(function()
+       local jump = library:GetBarFill("Jump")
+       print("update", jump)
+       game.Players.LocalPlayer.Character.Humanoid.JumpPower = jump;
+   end)
+end, function()
+   if jumpEvent then jumpEvent:Disconnect() end
+   game.Players.LocalPlayer.Character.Humanoid.JumpPower = cache.oldJump;
+end)
+ 
+NewTab:NewDragBar("Jump", 500, 50, function()
+   --legit do nothing;
+end)
+ 
+NewTab:SetPrimaryTab()
